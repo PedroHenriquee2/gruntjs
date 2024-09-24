@@ -22,8 +22,8 @@ module.exports = function(grunt) {
                 tasks: ['less:development']
             },
             html: {
-                files: ['src/index.html'],
-                tasks:['replace:dev']
+                files: ['dev/index.html'],
+                tasks: ['replace:dev']
             }
         },
         replace: {
@@ -75,16 +75,28 @@ module.exports = function(grunt) {
                     collapseWhitespace: true
                 },
                 files: {
-                    'dev/index.html': 'dev/index.html' 
+                    'dist/index.html': 'dev/index.html' // saída minificada para dist
                 }
             }
         },
-        clean: ['prebuild'],
+        clean: {
+            build: {
+                src: ['prebuild/']
+            }
+        },
         uglify: {
             target: {
-                files:{
+                files: {
                     'dist/script/main.min.js': 'src/script/min.js'
                 }
+            }
+        },
+        copy: {
+            main: {
+                expand: true,
+                cwd: 'src/',
+                src: ['**'],
+                dest: 'dist/'
             }
         }
     });
@@ -94,9 +106,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-
     grunt.registerTask('default', ['watch']);
-    grunt.registerTask('build', ['less:production', 'htmlmin:dist', 'replace:dist', 'clean', 'uglify']);
-}
+    grunt.registerTask('build', ['clean:build', 'less:production', 'htmlmin:dist', 'replace:dist', 'uglify', 'copy']);
+};
